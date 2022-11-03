@@ -46,6 +46,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
             return pos;
         }
 
+        public Vector3 FocusTarget() {
+            return cameraTransform.position + cameraTransform.forward * 15;
+        }
+
         public void CheckMotion() {
             float speed = new Vector3(playerRb.velocity.x, 0 , playerRb.velocity.z).magnitude;
 
