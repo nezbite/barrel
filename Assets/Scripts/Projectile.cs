@@ -13,11 +13,14 @@ public class Projectile : MonoBehaviour
     void Start() {
         rb = GetComponent<Rigidbody>();
         rb.velocity = (transform.up * 100);
+        gameObject.layer = 6;
         StartCoroutine(DestroyProjectile());
     }
 
     void OnCollisionEnter(Collision collision) {
         if (!exploded) {
+            if (collision.gameObject.tag == "Player") return;
+            gameObject.layer = 0;
             Vector3 explosionPos = transform.position;
             Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
             foreach (Collider hit in colliders) {
@@ -33,6 +36,8 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other) {
         if (!exploded) {
+            if (other.tag == "Player") return;
+            gameObject.layer = 0;
             Vector3 explosionPos = transform.position;
             Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
             foreach (Collider hit in colliders) {
