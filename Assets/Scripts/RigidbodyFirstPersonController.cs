@@ -81,7 +81,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private CapsuleCollider m_Capsule;
         private float m_YRotation;
         private Vector3 m_GroundContactNormal;
-        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
+        public bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
         Input inp;
 
 

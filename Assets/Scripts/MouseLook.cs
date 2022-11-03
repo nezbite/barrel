@@ -16,6 +16,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public float smoothTime = 5f;
         public bool lockCursor = true;
 
+        public float bobAmplitude = 0.015f;
+        public float bobFrequency = 10f;
+        public float bobToggleSpeed = 3.0f;
+        public Transform cameraTransform;
+        public Transform holderTransform;
+        public Vector3 bobStartPosition;
+        public RigidbodyFirstPersonController player;
+        public Rigidbody playerRb;
+
 
         private Quaternion m_CharacterTargetRot;
         private Quaternion m_CameraTargetRot;
@@ -27,6 +36,33 @@ namespace UnityStandardAssets.Characters.FirstPerson
             inp.Player.Enable();
             m_CharacterTargetRot = character.localRotation;
             m_CameraTargetRot = camera.localRotation;
+            bobStartPosition = camera.transform.localPosition;
+        }
+
+        public Vector3 FootStepMotion() {
+            Vector3 pos = Vector3.zero;
+            pos.y = MathF.Sin(Time.time * bobFrequency) * bobAmplitude;
+            pos.x = MathF.Cos(Time.time * bobFrequency / 2) * bobAmplitude * 2;
+            return pos;
+        }
+
+        public void CheckMotion() {
+            float speed = new Vector3(playerRb.velocity.x, 0 , playerRb.velocity.z).magnitude;
+
+            if (speed < bobToggleSpeed) return;
+            if (!player.m_IsGrounded) return;
+
+            PlayMotion(FootStepMotion());
+        }
+
+        void PlayMotion(Vector3 motion){
+            holderTransform.localPosition += motion; 
+        }
+
+        void ResetPosition() {
+            if (cameraTransform.localPosition != bobStartPosition) {
+                cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, bobStartPosition, Time.deltaTime);
+            }
         }
 
 
@@ -53,7 +89,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 character.localRotation = m_CharacterTargetRot;
                 camera.localRotation = m_CameraTargetRot;
             }
-
+            CheckMotion();
+            ResetPosition();
             UpdateCursorLock();
         }
 
