@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     public float WALKSPEED = 3f;
     public float RUNSPEED = 6f;
+    public float MAXSPEED = 5f;
     public float mouseSensitivity = .5f;
 
     float speed = 0f;
@@ -19,14 +20,21 @@ public class Player : MonoBehaviour
         cam = transform.GetComponentInChildren<Camera>();
     }
 
+
     void Update()
     {
-        // Movement
+        Rigidbody rb = GetComponent<Rigidbody>();
+        // Movement with rigidbody
         speed = inp.Player.Sprint.IsPressed() ? RUNSPEED : WALKSPEED;
         Vector2 movement = inp.Player.Move.ReadValue<Vector2>();
         if (movement != Vector2.zero) {
-            transform.position += transform.forward * speed * movement.y * Time.deltaTime;
-            transform.position += transform.right * speed * movement.x * Time.deltaTime;
+            Vector3 movementDirection = transform.forward*movement.y + transform.right*movement.x;
+            Debug.Log(movementDirection.normalized * speed);
+            rb.AddForce(movementDirection * speed);
+            // Limit Max Speed
+            if (rb.velocity.magnitude > MAXSPEED) {
+                rb.velocity = rb.velocity.normalized * MAXSPEED;
+            }
         }
 
         // Camera
