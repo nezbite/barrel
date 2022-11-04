@@ -82,6 +82,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_YRotation;
         private Vector3 m_GroundContactNormal;
         public bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded, m_WallRunning;
+        public int m_WallRunDirection;
         Input inp;
 
 
@@ -159,7 +160,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 {
                     m_RigidBody.drag = 0f;
                     m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x, 0f, m_RigidBody.velocity.z);
-                    m_RigidBody.AddForce(new Vector3(0f, movementSettings.JumpForce, 0f), ForceMode.Impulse);
+                    Vector3 newForce = new Vector3(0f, movementSettings.JumpForce, 0f) + (m_WallRunning ? (transform.right * -m_WallRunDirection * 10) : Vector3.zero);
+                    m_RigidBody.AddForce(newForce, ForceMode.Impulse);
                     m_Jumping = true;
                 }
 
@@ -183,7 +185,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     if (input.y > 0) {
                         Vector3 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
                         desiredMove = Vector3.ProjectOnPlane(desiredMove, m_GroundContactNormal).normalized;
-                        m_RigidBody.velocity = new Vector3(0, CameraXAngle()*3, 0) + desiredMove * 6;
+                        m_RigidBody.velocity = new Vector3(0, CameraXAngle()*3, 0) + desiredMove * 8;
                     } else {
                         m_WallRunning = false;
                     }
@@ -208,7 +210,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         // Detect if player is near to wall and enable Wall running
         void OnTriggerEnter(Collider other) {
-            if (other.tag == "Wall" && inp.Player.Sprint.IsPressed()) m_WallRunning = true;
+            if (other.tag == "Wall" && inp.Player.Sprint.IsPressed()) {
+                m_WallRunning = true;
+                Ray leftRay = new Ray(transform.position, -transform.right);
+                Ray rightRay = new Ray(transform.position, transform.right);
+                RaycastHit leftHit;
+                RaycastHit rightHit;
+                if (Physics.Raycast(leftRay, out leftHit, 1)) {
+                    m_WallRunDirection = -1;
+                } else if (Physics.Raycast(rightRay, out rightHit, 1)) {
+                    m_WallRunDirection = 1;
+                }
+            }
         }
 
         void OnTriggerExit(Collider other) {

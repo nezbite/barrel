@@ -46,21 +46,20 @@ namespace UnityStandardAssets.Characters.FirstPerson
             return pos;
         }
 
-        public Vector3 FocusTarget() {
-            return cameraTransform.position + cameraTransform.forward * 15;
-        }
-
         public void CheckMotion() {
             float speed = new Vector3(playerRb.velocity.x, 0 , playerRb.velocity.z).magnitude;
 
             if (speed < bobToggleSpeed) return;
-            if (!player.m_IsGrounded) return;
-
+            if (!player.m_IsGrounded && !player.m_WallRunning) return;
             PlayMotion(FootStepMotion());
         }
 
         void PlayMotion(Vector3 motion){
             holderTransform.localPosition += motion; 
+            float wallRunAngle = player.m_WallRunning ? (player.m_WallRunDirection * 12) : 0;
+            Debug.Log(wallRunAngle);
+            Quaternion newRotation = Quaternion.Euler(0, 0, wallRunAngle);
+            holderTransform.localRotation = Quaternion.Slerp(holderTransform.localRotation, newRotation, Time.deltaTime * 10);
         }
 
         void ResetPosition() {
