@@ -28,6 +28,10 @@ public class Projectile : MonoBehaviour
                 if (rb != null) {
                     rb.AddExplosionForce(explosionPower, explosionPos, explosionRadius);
                 }
+                Barrel b = hit.GetComponent<Barrel>();
+                if (b != null) {
+                    b.OnNearExplosion();
+                }
             }
             Instantiate(explosion, transform.position, Quaternion.identity);
             exploded = true;
@@ -44,6 +48,10 @@ public class Projectile : MonoBehaviour
                 Rigidbody rb = hit.GetComponent<Rigidbody>();
                 if (rb != null) {
                     rb.AddExplosionForce(explosionPower, explosionPos, explosionRadius);
+                }
+                Barrel b = hit.GetComponent<Barrel>();
+                if (b != null) {
+                    b.OnNearExplosion();
                 }
             }
             Instantiate(explosion, transform.position, Quaternion.identity);
