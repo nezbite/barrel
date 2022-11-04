@@ -8,8 +8,10 @@ public class Player : MonoBehaviour
     public float RUNSPEED = 6f;
     public float MAXSPEED = 5f;
     public float mouseSensitivity = .5f;
+    public BoxCollider wallDetection;
 
     float speed = 0f;
+    bool wallRunning = false;
 
     Input inp;
     Camera cam;
@@ -51,5 +53,7 @@ public class Player : MonoBehaviour
             // Rotate Player
             transform.Rotate(0, lookX, 0);
         }
+        Debug.Log("Hello?");
+        Debug.Log(wallRunning ? "Wall Running" : "Not Wall Running");
     }
 }

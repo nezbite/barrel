@@ -81,7 +81,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private CapsuleCollider m_Capsule;
         private float m_YRotation;
         private Vector3 m_GroundContactNormal;
-        public bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
+        public bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded, m_WallRunning;
         Input inp;
 
 
@@ -135,7 +135,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             GroundCheck();
             Vector2 input = GetInput();
 
-            if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && (advancedSettings.airControl || m_IsGrounded))
+            if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && (advancedSettings.airControl || m_IsGrounded || m_WallRunning))
             {
                 // always move along the camera forward as it is the direction that it being aimed at
                 Vector3 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
@@ -151,9 +151,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 }
             }
 
-            if (m_IsGrounded)
+            if (m_IsGrounded || m_WallRunning)
             {
-                m_RigidBody.drag = 5f;
+                m_RigidBody.drag = 5f * (m_WallRunning ? 0 : 1);
 
                 if (m_Jump)
                 {
@@ -177,6 +177,42 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 }
             }
             m_Jump = false;
+            // Wall Running
+            if (m_WallRunning) {
+                if (inp.Player.Sprint.IsPressed()) {
+                    if (input.y > 0) {
+                        Vector3 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
+                        desiredMove = Vector3.ProjectOnPlane(desiredMove, m_GroundContactNormal).normalized;
+                        m_RigidBody.velocity = new Vector3(0, CameraXAngle()*3, 0) + desiredMove * 6;
+                    } else {
+                        m_WallRunning = false;
+                    }
+                } else {
+                    m_WallRunning = false;
+                }
+            }
+            float targetFov = Running ? (m_WallRunning ? 100 : 90) : 80;
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFov, Time.deltaTime * 10);
+        }
+
+        float CameraXAngle() {
+            // Bottom to top:
+            // 90 - 0 -> 360 - 270
+            float angle = cam.transform.rotation.eulerAngles.x;
+            if (angle >= 270) {
+                return 1-(angle-270)/90;
+            } else {
+                return -(angle)/90;
+            }
+        }
+
+        // Detect if player is near to wall and enable Wall running
+        void OnTriggerEnter(Collider other) {
+            if (other.tag == "Wall" && inp.Player.Sprint.IsPressed()) m_WallRunning = true;
+        }
+
+        void OnTriggerExit(Collider other) {
+            if (other.tag == "Wall") m_WallRunning = false;
         }
 
 
