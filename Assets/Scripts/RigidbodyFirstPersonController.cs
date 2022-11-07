@@ -160,7 +160,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 {
                     m_RigidBody.drag = 0f;
                     m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x, 0f, m_RigidBody.velocity.z);
-                    Vector3 newForce = new Vector3(0f, movementSettings.JumpForce, 0f) + (m_WallRunning ? (transform.right * -m_WallRunDirection * 10) : Vector3.zero);
+                    Vector3 newForce = new Vector3(0f, movementSettings.JumpForce * (m_WallRunning ? 20 : 1), 0f) + (m_WallRunning ? (transform.right * -m_WallRunDirection * 150 + transform.forward * 50) : Vector3.zero);
                     m_RigidBody.AddForce(newForce, ForceMode.Impulse);
                     m_Jumping = true;
                 }
@@ -173,7 +173,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             else
             {
                 m_RigidBody.drag = 0f;
-                if (m_PreviouslyGrounded && !m_Jumping)
+                if (m_PreviouslyGrounded && !m_Jumping && !m_WallRunning)
                 {
                     StickToGroundHelper();
                 }
@@ -194,7 +194,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 }
             }
             float targetFov = Running ? (m_WallRunning ? 100 : 90) : 80;
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFov, Time.deltaTime * 10);
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFov, Time.deltaTime * 4);
         }
 
         float CameraXAngle() {

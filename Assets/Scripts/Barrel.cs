@@ -24,6 +24,7 @@ public class Barrel : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log(collision.relativeVelocity.magnitude);
+        if (collision.gameObject.tag == "Player") return;
         if (collision.relativeVelocity.magnitude > 10)
         {
             Explode();
