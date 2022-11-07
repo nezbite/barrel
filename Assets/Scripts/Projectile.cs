@@ -20,6 +20,8 @@ public class Projectile : MonoBehaviour
     void OnCollisionEnter(Collision collision) {
         if (!exploded) {
             if (collision.gameObject.tag == "Player") return;
+            GetComponent<ParticleSystem>().Stop();
+            GetComponent<ParticleSystem>().Clear();
             gameObject.layer = 0;
             Vector3 explosionPos = transform.position;
             Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
@@ -41,6 +43,8 @@ public class Projectile : MonoBehaviour
     void OnTriggerEnter(Collider other) {
         if (!exploded) {
             if (other.tag == "Player") return;
+            GetComponent<ParticleSystem>().Stop();
+            GetComponent<ParticleSystem>().Clear();
             gameObject.layer = 0;
             Vector3 explosionPos = transform.position;
             Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
