@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Destructable : MonoBehaviour
 {
+    public bool keepRigidBody = false;
     bool destroyed = false;
     bool delay = false;
     Rigidbody rb;
@@ -12,6 +13,7 @@ public class Destructable : MonoBehaviour
         if (destroyed) return;
         destroyed = true;
         rb = gameObject.AddComponent<Rigidbody>();
+        rb.AddForce(new Vector3(Random.Range(-10, 10), Random.Range(-10, 10), Random.Range(-10, 10)), ForceMode.Impulse);
         StartCoroutine(StartDelay());
     }
 
@@ -23,6 +25,7 @@ public class Destructable : MonoBehaviour
     }
 
     void Update() {
+        if (keepRigidBody) return;
         if (rb != null) {
             if (delay && rb.velocity == Vector3.zero) {
                 Destroy(rb);
