@@ -24,17 +24,7 @@ public class Projectile : MonoBehaviour
             GetComponent<ParticleSystem>().Clear();
             gameObject.layer = 0;
             Vector3 explosionPos = transform.position;
-            Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
-            foreach (Collider hit in colliders) {
-                Rigidbody rb = hit.GetComponent<Rigidbody>();
-                if (rb != null) {
-                    rb.AddExplosionForce(explosionPower, explosionPos, explosionRadius);
-                }
-                Barrel b = hit.GetComponent<Barrel>();
-                if (b != null) {
-                    b.OnNearExplosion();
-                }
-            }
+            ExplosionPhysics.Explosion(explosionPos, explosionRadius, explosionPower);
             Instantiate(explosion, transform.position, Quaternion.identity);
             exploded = true;
         }
@@ -47,17 +37,7 @@ public class Projectile : MonoBehaviour
             GetComponent<ParticleSystem>().Clear();
             gameObject.layer = 0;
             Vector3 explosionPos = transform.position;
-            Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
-            foreach (Collider hit in colliders) {
-                Rigidbody rb = hit.GetComponent<Rigidbody>();
-                if (rb != null) {
-                    rb.AddExplosionForce(explosionPower, explosionPos, explosionRadius);
-                }
-                Barrel b = hit.GetComponent<Barrel>();
-                if (b != null) {
-                    b.OnNearExplosion();
-                }
-            }
+            ExplosionPhysics.Explosion(explosionPos, explosionRadius, explosionPower);
             Instantiate(explosion, transform.position, Quaternion.identity);
             exploded = true;
         }
